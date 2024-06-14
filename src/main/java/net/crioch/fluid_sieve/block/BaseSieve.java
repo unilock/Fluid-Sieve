@@ -1,23 +1,18 @@
 package net.crioch.fluid_sieve.block;
 
-import net.crioch.fluid_sieve.FluidSieveMod;
 import net.crioch.fluid_sieve.loot.context.FluidSieveLootContextTypes;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.*;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
@@ -25,18 +20,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BaseSieve extends Block implements Waterloggable {
     private static final VoxelShape selectionShape = VoxelShapes.union(
@@ -60,7 +52,7 @@ public class BaseSieve extends Block implements Waterloggable {
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         if (state.get(Properties.WATERLOGGED)) {
             return Fluids.WATER.getStill(false);
         }
@@ -68,7 +60,7 @@ public class BaseSieve extends Block implements Waterloggable {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean waterlogged = state.get(Properties.WATERLOGGED);
 
         Identifier id = Registries.FLUID.getId(waterlogged ? Fluids.WATER.getStill() : Fluids.EMPTY);
@@ -112,13 +104,13 @@ public class BaseSieve extends Block implements Waterloggable {
     }
 
     @Override
-    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockState downState = world.getBlockState(pos.down());
         return downState.isSideSolid(world, pos.up(), Direction.UP, SideShapeType.FULL) || downState.isOf(Blocks.HOPPER);
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (this.canPlaceAt(state, world, pos)) {
             return state;
         }
@@ -150,10 +142,7 @@ public class BaseSieve extends Block implements Waterloggable {
     }
 
     private List<ItemStack> getLoot(Identifier fluidId, ServerWorld world, BlockState state, BlockPos pos, Random random) {
-        Identifier path = fluidId.withPrefixedPath("sieve/");
-        RegistryKey<LootTable> key = RegistryKey.of(RegistryKeys.LOOT_TABLE, path);
-
-        LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(key);
+        LootTable lootTable = world.getServer().getLootManager().getLootTable(fluidId.withPrefixedPath("sieve/"));
 
         // Exit early if the loot table isn't defined
         if (lootTable.equals(LootTable.EMPTY)) {
