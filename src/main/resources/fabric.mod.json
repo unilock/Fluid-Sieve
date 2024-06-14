@@ -6,25 +6,25 @@
   "description": "",
   "authors": [],
   "contact": {
-    "repo": "https://github.com/samjb/Fluid Sieve"
+    "sources": "https://github.com/CriochDev/Fluid-Sieve"
   },
   "license": "MIT",
   "icon": "assets/fluid_sieve/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "net.crioch.fluid_sieve.client.FluidSieveClient"
-    ],
     "main": [
       "net.crioch.fluid_sieve.FluidSieveMod"
+    ],
+    "client": [
+      "net.crioch.fluid_sieve.client.FluidSieveClient"
     ]
   },
   "mixins": [
     "fluid_sieve.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
-    "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "fabricloader": ">=0.15",
+    "minecraft": ">=1.21",
+    "fabric-api": "*"
   }
 }
