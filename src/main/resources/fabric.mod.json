@@ -3,8 +3,12 @@
   "id": "fluid_sieve",
   "version": "${version}",
   "name": "Fluid Sieve",
-  "description": "",
-  "authors": [],
+  "description": "Adds sieves that filter items from fluids and entities",
+  "authors": [
+    "CheaterCodes",
+    "Crioch",
+    "unilock"
+  ],
   "contact": {
     "sources": "https://github.com/CriochDev/Fluid-Sieve"
   },
